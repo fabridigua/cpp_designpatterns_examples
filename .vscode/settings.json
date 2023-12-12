@@ -45,5 +45,6 @@
         "xtr1common": "cpp",
         "xutility": "cpp",
         "sstream": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": false
 }
