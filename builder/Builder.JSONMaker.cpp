@@ -6,54 +6,41 @@
 using namespace std;
 
 struct JSONBuilder;
-
 struct JSONData
 {
     std::string key;
     std::string value;  
     std::vector<JSONData> elements;    
 
-  JSONData() {}
-  JSONData(const string& key, const string& value)
-    : key(key), value(value), elements({})
-  {}
-  JSONData(const string& key, const std::vector<JSONData>& elements)
-    : key(key), elements(elements), value(std::string())
-  {}
+    JSONData() {}
+    JSONData(const std::string& key, const std::string& value)
+        : key(key), value(value), elements({})
+    {}
+    JSONData(const std::string& key, const std::vector<JSONData>& elements)
+        : key(key), elements(elements), value(std::string()){}
 
-  string str(int indent = 0) const
-  {
-    string _indent(2*indent, ' ');
-
-    ostringstream oss;
-
-    //  if(key.empty()) oss << "{" << std::endl;
-
-    if(!key.empty())
-        oss << _indent << "\"" << key << "\" : ";
-    if(!value.empty())
+    std::string str(int indent = 0) const
     {
-        oss << value << "," << std::endl;
-    }
-    else
-    {
-        oss << " { " << std::endl;
-            for (auto& data: elements)
+        string _indent(2*indent, ' ');
+        ostringstream oss;
+        if(!key.empty())
+            oss << _indent << "\"" << key << "\" : ";
+        if(!value.empty())
+        {
+            oss << value;
+        }
+        else
+        {
+            oss << " { " << std::endl;
+            for (int k=0; k<elements.size(); k++)
             {
-                oss << _indent << data.str();
+                oss << _indent << elements[k].str() ;
+                oss << ((k < elements.size() - 1) ? ",":"") << std::endl;
             }
-        oss << " } " << std::endl;
+            oss << "}" << ((!key.empty())?",":"") << std::endl;
+        }
+        return oss.str();
     }
-    
-    // if(key.empty()) oss << "}" << std::endl;
-
-    return oss.str();
-  }
-
-  static unique_ptr<JSONBuilder> build()
-  {
-    return make_unique<JSONBuilder>();
-  }
 };
 
 struct JSONBuilder
@@ -112,11 +99,8 @@ int main()
   .add_obj("details", json_obj_builder);
 
   JSONBuilder builder;
-  builder.add_obj("test", json_obj_root)
-  .add_int("timestamp", 17284932)
-  .add_bool("debug_mode", true);
+  builder.add_obj("test", json_obj_root);
   std::cout << builder.str() << std::endl;
-
 
   getchar();
   return 0;
